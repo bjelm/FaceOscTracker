@@ -19,7 +19,7 @@ void ofApp::setup(){
     finder.setCannyPruning(true);
     finder.setFindBiggestObject(false);
     
-    cam.initGrabber(1024, 768);
+    cam.initGrabber(1280, 720);
     sunglasses.loadImage("sunglasses.png");
     lionface.loadImage("lionface.png");
     ofEnableAlphaBlending();
@@ -43,7 +43,7 @@ void ofApp::draw(){
     for(int i = 0; i < finder.size(); i++) {
         ofRectangle object = finder.getObjectSmoothed(i);
         lionface.setAnchorPercent(.5, .5);
-        float scaleAmount = 1.3 * object.width / lionface.getWidth();
+        float scaleAmount = 1.4 * object.width / lionface.getWidth();
         
         ofPushMatrix();
         ofTranslate(object.x + object.width / 2., object.y + object.height * .42);
