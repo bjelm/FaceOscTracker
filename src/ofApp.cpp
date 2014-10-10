@@ -1,4 +1,5 @@
 #include "ofApp.h"
+
 using namespace ofxCv;
 using namespace cv;
 
@@ -48,9 +49,24 @@ void ofApp::draw(){
         ofPushMatrix();
         ofTranslate(object.x + object.width / 2., object.y + object.height * .42);
         
+        char str[50];
+        sprintf(str, "/face/area%d", i);
+        
+        
+        ofxOscMessage area;
+        area.setAddress(str);
+        area.addIntArg(object.getArea());
+        sender.sendMessage(area);
+        
+       /*
+        ofxOscMessage id;
+        id.setAddress("/face/id");
+        id.addIntArg(i);
+        sender.sendMessage(id);
+       */
         ofScale(scaleAmount, scaleAmount);
         lionface.draw(0, 0);
-        
+       /*
         ofxOscMessage fx;
         fx.setAddress("/face/positionx");
         fx.addIntArg(object.x);
@@ -61,6 +77,7 @@ void ofApp::draw(){
         fy.setAddress("/face/positiony");
         fy.addIntArg(object.y);
         sender.sendMessage(fy);
+        */
         
         ofPopMatrix();
         ofPushMatrix();
@@ -73,6 +90,7 @@ void ofApp::draw(){
 
 
 }
+
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
