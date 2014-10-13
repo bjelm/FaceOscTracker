@@ -72,13 +72,14 @@ void ofApp::draw(){
         
         int nr = finder.getTracker().getLabelFromIndex(i);
         
+        int areaSize=object.getArea();
         
         sprintf(str, "/face/area%d/", nr);
         
         ofxOscMessage area;
         
         area.setAddress(str);
-        area.addIntArg(object.getArea()/1000);
+        area.addIntArg(areaSize/1000);
 
         sender.sendMessage(area);
         
@@ -89,8 +90,7 @@ void ofApp::draw(){
         cout << endl;
         */
         cout << str;
-        cout << endl;
-        cout << object.getArea()/1000;
+        cout << areaSize/1000;
         cout << endl;
         
         
