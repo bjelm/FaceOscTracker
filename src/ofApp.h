@@ -26,7 +26,10 @@ class ofApp : public ofBaseApp{
     ofVideoGrabber cam;
     ofxCv::ObjectFinder finder;
     ofxOscSender sender;
-    ofImage sunglasses;
-    ofImage lionface;
-		
+    ofImage image0;
+    ofImage image1;
+    ofImage image2;
+    ofImage image3;
+    ofImage image4;
+    string animals[5]={"dog1.png","dog2.png","dog3.png","ape1.png","cat1.png"};
 };
