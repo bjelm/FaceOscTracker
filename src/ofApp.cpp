@@ -1,3 +1,11 @@
+/*
+ FaceOscTracker
+ 
+ TO DO:
+ - Check faces swapping labels (IDs)
+ - Load images in array // setup()
+ */
+
 #include "ofApp.h"
 
 //#include <vector>
@@ -6,16 +14,16 @@ using namespace ofxCv;
 using namespace cv;
 
 //--------------------------------------------------------------
+
 void ofApp::setup(){
     ofSetVerticalSync(true);
-    ofSetFrameRate(60);
-  
+    ofSetFrameRate(15);
     
     finder.setup("haarcascade_frontalface_alt2.xml");
     //finder.setup("haarcascade_frontalface_default.xml");
     
+    // Define face tracking presets
     //finder.setPreset(ObjectFinder::Fast);
-    
     finder.setRescale(.3);
     finder.setMinNeighbors(2);
     finder.setMultiScaleFactor(1.2);
@@ -25,11 +33,16 @@ void ofApp::setup(){
     finder.setFindBiggestObject(false);
     finder.setUseHistogramEqualization(true);
     
+    // Change tracker persistence
+    // "persistence" determines how many frames an object can last without being
+    // seen until the tracker forgets about it. "maximumDistance" determines how
+    // far an object can move until the tracker considers it a new object.
+
+    finder.getTracker().setPersistence(240); // Default: 15
+    finder.getTracker().setMaximumDistance(128); // Default: 64
     
-    
-    cam.initGrabber(1024, 768);
-    
-   
+    // Init camera
+    cam.initGrabber(640, 480);
     
     /*
     image0.loadImage("dog1.png");
@@ -39,21 +52,23 @@ void ofApp::setup(){
     image4.loadImage("dog3.png");
     */
     
-    
     ofEnableAlphaBlending();
+    
+    // Init OSC sender
     sender.setup(HOST, PORT);
-    
-    
 }
 
 //--------------------------------------------------------------
+
 void ofApp::update(){
+    
+    // Update camera and finder
     cam.update();
     if(cam.isFrameNew()) {
         finder.update(cam);
     }
     
-    //Resseting osc messages
+    // Resseting osc messages
     ofxOscMessage area1;
     ofxOscMessage area2;
     ofxOscMessage area3;
@@ -97,8 +112,7 @@ void ofApp::update(){
     int labels=finder.getTracker().getCurrentLabels().size();
  
     
- for (int i = 0; i < labels; i++){
-
+    for (int i = 0; i < labels; i++){
         
          /*
          if (finder.getLabel(i) > 10 ){
@@ -151,8 +165,6 @@ void ofApp::update(){
          */
 
     }
-
-    
 }
 
 //--------------------------------------------------------------
@@ -160,9 +172,9 @@ void ofApp::draw(){
     cam.draw(0, 0);
     
    //finder.draw();
-   //ofDrawBitmapStringHighlight(ofToString(finder.size()), 10, 20);
-   
-        for(int i = 0; i < finder.size(); i++) {
+   //ofDrawBitmapStringHighlight(ofToString(finder.size()), 10,
+    
+    for(int i = 0; i < finder.size(); i++) {
         
         //ofRectangle object = finder.getObjectSmoothed(i);
         ofRectangle object = finder.getObject(i);
@@ -185,52 +197,4 @@ void ofApp::draw(){
         //ofLine(ofVec2f(), toOf(finder.getVelocity(i)) * 10);
         ofPopMatrix();
     }
-
-
-}
-
-
-//--------------------------------------------------------------
-void ofApp::keyPressed(int key){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::keyReleased(int key){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseMoved(int x, int y ){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseDragged(int x, int y, int button){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mousePressed(int x, int y, int button){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseReleased(int x, int y, int button){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::windowResized(int w, int h){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::gotMessage(ofMessage msg){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::dragEvent(ofDragInfo dragInfo){ 
-
 }
