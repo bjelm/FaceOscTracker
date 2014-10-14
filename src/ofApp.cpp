@@ -20,7 +20,7 @@ vector<string> imageMemory;
 
 void ofApp::setup(){
     ofSetVerticalSync(true);
-    ofSetFrameRate(15);
+    ofSetFrameRate(30);
     
     imageMemory.assign(300,"NULL");
 
@@ -45,7 +45,7 @@ void ofApp::setup(){
     finder.setMinNeighbors(2);
     finder.setMultiScaleFactor(1.2);
     finder.setMinSizeScale(.05);
-    finder.setMaxSizeScale(.2);
+    finder.setMaxSizeScale(.7);
     finder.setCannyPruning(false);
     finder.setFindBiggestObject(false);
     
@@ -57,7 +57,7 @@ void ofApp::setup(){
     // seen until the tracker forgets about it. "maximumDistance" determines how
     // far an object can move until the tracker considers it a new object.
 
-    finder.getTracker().setPersistence(200); // Default: 15
+    finder.getTracker().setPersistence(100); // Default: 15
     finder.getTracker().setMaximumDistance(700); // Default: 64
     
     // Init camera
