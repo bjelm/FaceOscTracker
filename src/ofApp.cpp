@@ -8,10 +8,13 @@
 
 #include "ofApp.h"
 
-//#include <vector>
+#include <iostream>
+#include <vector>
 
 using namespace ofxCv;
 using namespace cv;
+vector<string> imageMemory;
+
 
 //--------------------------------------------------------------
 
@@ -19,30 +22,46 @@ void ofApp::setup(){
     ofSetVerticalSync(true);
     ofSetFrameRate(15);
     
-    finder.setup("haarcascade_frontalface_alt2.xml");
-    //finder.setup("haarcascade_frontalface_default.xml");
+    imageMemory.assign(300,"NULL");
+
+    
+    //finder.setup("haarcascade_frontalface_alt2.xml");
+    finder.setup("haarcascade_frontalface_default.xml");
     
     // Define face tracking presets
     //finder.setPreset(ObjectFinder::Fast);
+    
+    /*
     finder.setRescale(.3);
     finder.setMinNeighbors(2);
     finder.setMultiScaleFactor(1.2);
     finder.setMinSizeScale(.03);
     finder.setMaxSizeScale(.8);
-    finder.setCannyPruning(true);
+    finder.setCannyPruning(false);
     finder.setFindBiggestObject(false);
-    finder.setUseHistogramEqualization(true);
+    */
+    
+    finder.setRescale(.27);
+    finder.setMinNeighbors(2);
+    finder.setMultiScaleFactor(1.2);
+    finder.setMinSizeScale(.05);
+    finder.setMaxSizeScale(.2);
+    finder.setCannyPruning(false);
+    finder.setFindBiggestObject(false);
+    
+    finder.setUseHistogramEqualization(false);
+    finder.getTracker().setSmoothingRate(.3);
     
     // Change tracker persistence
     // "persistence" determines how many frames an object can last without being
     // seen until the tracker forgets about it. "maximumDistance" determines how
     // far an object can move until the tracker considers it a new object.
 
-    finder.getTracker().setPersistence(240); // Default: 15
-    finder.getTracker().setMaximumDistance(128); // Default: 64
+    finder.getTracker().setPersistence(200); // Default: 15
+    finder.getTracker().setMaximumDistance(700); // Default: 64
     
     // Init camera
-    cam.initGrabber(640, 480);
+    cam.initGrabber(1280, 720);
     
     /*
     image0.loadImage("dog1.png");
@@ -106,8 +125,7 @@ void ofApp::update(){
     sender.sendMessage(area7);
     
     
-    std::vector<unsigned int> trackerLables;
-    trackerLables = finder.getTracker().getCurrentLabels();
+ 
     
     int labels=finder.getTracker().getCurrentLabels().size();
  
@@ -136,13 +154,17 @@ void ofApp::update(){
         
         sender.sendMessage(area);
         
-        
+     /*
         cout << str;
         cout << areaSize/100;
         cout << endl;
         cout << finder.getTracker().getCurrentLabels().size();
         cout << endl;
         cout << numlabel;
+        cout << endl;
+      
+      */
+       // cout << finder.getTracker().getSmoothingRate();
         
 
         
@@ -174,12 +196,62 @@ void ofApp::draw(){
    //finder.draw();
    //ofDrawBitmapStringHighlight(ofToString(finder.size()), 10,
     
+    
+    std::vector<unsigned int> trackerLables;
+    
+    //std::vector<unsigned int> imageMemory;
+    
+    trackerLables = finder.getTracker().getCurrentLabels();
+    
+    
     for(int i = 0; i < finder.size(); i++) {
+
+        ofRectangle object = finder.getObjectSmoothed(i);
+
+        //Building image memory
+        /*
+         if(std::find(vector.begin(), vector.end(), item)!=vector.end()){
+         if ((i > 0 && i < imageMemory(i).size()) && (imageMemory()[i] != NULL)){
+         
         
-        //ofRectangle object = finder.getObjectSmoothed(i);
-        ofRectangle object = finder.getObject(i);
-        image0.loadImage(animals[i]);
+         
+         // image0.loadImage(animals[i]);
+         
+         }
+        }
+         if (finder.getTracker().getLabelFromIndex(i) > 0 && finder.getTracker().getLabelFromIndex(i) < imageMemory.size()){
+         
+         */
+        
+        if ((imageMemory.at(finder.getTracker().getLabelFromIndex(i)) != "NULL")){
+        
+     
+            image0.loadImage(imageMemory.at(finder.getTracker().getLabelFromIndex(i)));
+            
+            cout << "If not empty";
+            cout << endl;
+            cout << finder.getTracker().getLabelFromIndex(i);
+            cout << endl;
+            cout << imageMemory.at(finder.getTracker().getLabelFromIndex(i));
+            cout << endl;
+            
+        }else{
+
+            imageMemory[finder.getTracker().getLabelFromIndex(i)]=animals[(int)ofRandom(0,4)];
+            
+            cout << "Else if empty";
+            cout << endl;
+            cout << finder.getTracker().getLabelFromIndex(i);
+            cout << endl;
+            cout << imageMemory.at(finder.getTracker().getLabelFromIndex(i));
+            cout << endl;
+            
+            image0.loadImage(imageMemory.at(finder.getTracker().getLabelFromIndex(i)));
+        }
+        
+        
         image0.setAnchorPercent(.5, .5);
+        
         float scaleAmount = 1.4 * object.width / image0.getWidth();
         
 
