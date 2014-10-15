@@ -10,6 +10,8 @@
 	<string>FaceOscTracker</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
+		<key>6116060B9B43ED41429AE056D680B0BE4D4D9659</key>
+		<string>https://github.com/bakercp/ofxPS3EyeGrabber.git</string>
 		<key>C44CFF3A74EB34259366CC6787859E19CC895E0B</key>
 		<string>https://github.com/bjelm/FaceOscTracker.git</string>
 	</dict>
@@ -17,6 +19,8 @@
 	<string>FaceOscTracker.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
+		<key>6116060B9B43ED41429AE056D680B0BE4D4D9659</key>
+		<string>../../../addons/ofxPS3EyeGrabber</string>
 		<key>C44CFF3A74EB34259366CC6787859E19CC895E0B</key>
 		<string>../..</string>
 	</dict>
@@ -35,6 +39,14 @@
 			<string>C44CFF3A74EB34259366CC6787859E19CC895E0B</string>
 			<key>IDESourceControlWCCName</key>
 			<string>FaceOscTracker</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>6116060B9B43ED41429AE056D680B0BE4D4D9659</string>
+			<key>IDESourceControlWCCName</key>
+			<string>ofxPS3EyeGrabber</string>
 		</dict>
 	</array>
 </dict>

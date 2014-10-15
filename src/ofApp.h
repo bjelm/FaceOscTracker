@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "ofxOsc.h"
 #include "ofxCv.h"
+#include "ofxPS3EyeGrabber.h"
 
 // OSC connection
 #define HOST "localhost"
@@ -15,14 +16,22 @@ class ofApp : public ofBaseApp{
 		void update();
 		void draw();
     
-    ofVideoGrabber cam;
+    bool                PS3CAM;
+    //Ps3 camera
+    //ofxPS3EyeGrabber    vidGrabber;
+    
+    //Normal camera
+    ofVideoGrabber 	vidGrabber;
+    unsigned char * 	videoInverted;
+    ofTexture			videoTexture;
+    int 				camWidth;
+    int 				camHeight;
+    int                 camFrameRate;
+    
     ofxCv::ObjectFinder finder;
     ofxOscSender sender;
-    ofImage image0;
-//    ofImage image1;
-//    ofImage image2;
-//    ofImage image3;
-//    ofImage image4;
+    ofImage imageOverlay;
+
     string animals[5]={"dog1.png","dog2.png","dog3.png","ape1.png","cat1.png"};
  
 };

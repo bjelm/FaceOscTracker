@@ -7,7 +7,6 @@
  */
 
 #include "ofApp.h"
-
 #include <iostream>
 #include <vector>
 
@@ -19,9 +18,54 @@ vector<string> imageMemory;
 //--------------------------------------------------------------
 
 void ofApp::setup(){
-    ofSetVerticalSync(true);
-    ofSetFrameRate(30);
+    ofSetFrameRate(60);
     
+    // Init camera
+
+    camWidth 		= 800;	// try to grab at this size.
+    camHeight 		= 600;
+    camFrameRate    = 30;
+    
+    //we can now get back a list of devices.
+    vector<ofVideoDevice> devices = vidGrabber.listDevices();
+    
+    
+    for(int i = 0; i < devices.size(); i++){
+        cout << devices[i].id << ": " << devices[i].deviceName;
+        if( devices[i].bAvailable ){
+            cout << endl;
+        }else{
+            cout << " - unavailable " << endl;
+        }
+    }
+    
+    
+    
+    //Normal camera
+    
+    vidGrabber.setDeviceID(0);
+    vidGrabber.setDesiredFrameRate(camFrameRate);
+    vidGrabber.initGrabber(camWidth,camHeight);
+    
+    
+    //ONLY PS3
+    /*
+    vidGrabber.setDeviceID(0);
+    vidGrabber.setDesiredFrameRate(camFrameRate);
+    vidGrabber.initGrabber(camWidth, camHeight);
+    vidGrabber.setAutogain(true);
+    vidGrabber.setAutoWhiteBalance(true);
+    vidGrabber.setBrightness(30);
+    vidGrabber.setContrast(30);
+    */
+    //ONLY PS3
+    
+    
+    videoInverted 	= new unsigned char[camWidth*camHeight*3];
+    videoTexture.allocate(camWidth,camHeight, GL_RGB);
+    
+    ofSetVerticalSync(false);
+
     imageMemory.assign(300,"NULL");
 
     
@@ -46,7 +90,7 @@ void ofApp::setup(){
     finder.setMultiScaleFactor(1.2);
     finder.setMinSizeScale(.05);
     finder.setMaxSizeScale(.7);
-    finder.setCannyPruning(false);
+    finder.setCannyPruning(true);
     finder.setFindBiggestObject(false);
     
     finder.setUseHistogramEqualization(false);
@@ -57,21 +101,10 @@ void ofApp::setup(){
     // seen until the tracker forgets about it. "maximumDistance" determines how
     // far an object can move until the tracker considers it a new object.
 
-    finder.getTracker().setPersistence(100); // Default: 15
-    finder.getTracker().setMaximumDistance(700); // Default: 64
+    finder.getTracker().setPersistence(300); // Default: 15
+    finder.getTracker().setMaximumDistance(500); // Default: 64
     
-    // Init camera
-    cam.initGrabber(1280, 720);
-    
-    /*
-    image0.loadImage("dog1.png");
-    image1.loadImage("dog2.png");
-    image2.loadImage("cat1.png");
-    image3.loadImage("ape1.png");
-    image4.loadImage("dog3.png");
-    */
-    
-    ofEnableAlphaBlending();
+     ofEnableAlphaBlending();
     
     // Init OSC sender
     sender.setup(HOST, PORT);
@@ -82,9 +115,12 @@ void ofApp::setup(){
 void ofApp::update(){
     
     // Update camera and finder
-    cam.update();
-    if(cam.isFrameNew()) {
-        finder.update(cam);
+    vidGrabber.update();
+    
+    if (vidGrabber.isFrameNew())
+    {
+        finder.update(vidGrabber);
+        videoTexture.loadData(vidGrabber.getPixelsRef());
     }
     
     // Resseting osc messages
@@ -153,19 +189,6 @@ void ofApp::update(){
         area.addIntArg(areaSize/100);
         
         sender.sendMessage(area);
-        
-     /*
-        cout << str;
-        cout << areaSize/100;
-        cout << endl;
-        cout << finder.getTracker().getCurrentLabels().size();
-        cout << endl;
-        cout << numlabel;
-        cout << endl;
-      
-      */
-       // cout << finder.getTracker().getSmoothingRate();
-        
 
         
          /*
@@ -191,15 +214,13 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    cam.draw(0, 0);
+    videoTexture.draw(0, 0);
     
    //finder.draw();
    //ofDrawBitmapStringHighlight(ofToString(finder.size()), 10,
     
     
     std::vector<unsigned int> trackerLables;
-    
-    //std::vector<unsigned int> imageMemory;
     
     trackerLables = finder.getTracker().getCurrentLabels();
     
@@ -208,25 +229,13 @@ void ofApp::draw(){
 
         ofRectangle object = finder.getObjectSmoothed(i);
 
-        //Building image memory
-        /*
-         if(std::find(vector.begin(), vector.end(), item)!=vector.end()){
-         if ((i > 0 && i < imageMemory(i).size()) && (imageMemory()[i] != NULL)){
-         
+        //Image memory
         
-         
-         // image0.loadImage(animals[i]);
-         
-         }
-        }
-         if (finder.getTracker().getLabelFromIndex(i) > 0 && finder.getTracker().getLabelFromIndex(i) < imageMemory.size()){
-         
-         */
-        
+        //Check if images is in memory, and if it is load it
         if ((imageMemory.at(finder.getTracker().getLabelFromIndex(i)) != "NULL")){
         
      
-            image0.loadImage(imageMemory.at(finder.getTracker().getLabelFromIndex(i)));
+            imageOverlay.loadImage(imageMemory.at(finder.getTracker().getLabelFromIndex(i)));
             
             cout << "If not empty";
             cout << endl;
@@ -235,6 +244,7 @@ void ofApp::draw(){
             cout << imageMemory.at(finder.getTracker().getLabelFromIndex(i));
             cout << endl;
             
+           //Else add it to memory
         }else{
 
             imageMemory[finder.getTracker().getLabelFromIndex(i)]=animals[(int)ofRandom(0,4)];
@@ -246,13 +256,13 @@ void ofApp::draw(){
             cout << imageMemory.at(finder.getTracker().getLabelFromIndex(i));
             cout << endl;
             
-            image0.loadImage(imageMemory.at(finder.getTracker().getLabelFromIndex(i)));
+            imageOverlay.loadImage(imageMemory.at(finder.getTracker().getLabelFromIndex(i)));
         }
         
         
-        image0.setAnchorPercent(.5, .5);
+        imageOverlay.setAnchorPercent(.5, .5);
         
-        float scaleAmount = 1.4 * object.width / image0.getWidth();
+        float scaleAmount = 1.4 * object.width / imageOverlay.getWidth();
         
 
         ofPushMatrix();
@@ -260,7 +270,7 @@ void ofApp::draw(){
         
 
         ofScale(scaleAmount, scaleAmount);
-        image0.draw(0, 0);
+        imageOverlay.draw(0, 0);
         
         ofPopMatrix();
         ofPushMatrix();
