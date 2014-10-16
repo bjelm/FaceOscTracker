@@ -21,10 +21,11 @@ void ofApp::setup(){
     ofSetFrameRate(60);
     
     // Init camera
+    drawPictures    =false;
 
-    camWidth 		= 800;	// try to grab at this size.
-    camHeight 		= 600;
-    camFrameRate    = 30;
+    camWidth 		= 720;	// try to grab at this size.
+    camHeight 		= 480;
+    camFrameRate    = 25;
     
     //we can now get back a list of devices.
     vector<ofVideoDevice> devices = vidGrabber.listDevices();
@@ -43,7 +44,7 @@ void ofApp::setup(){
     
     //Normal camera
     
-    vidGrabber.setDeviceID(0);
+    vidGrabber.setDeviceID(1);
     vidGrabber.setDesiredFrameRate(camFrameRate);
     vidGrabber.initGrabber(camWidth,camHeight);
     
@@ -214,7 +215,9 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    videoTexture.draw(0, 0);
+    
+    //Draw video
+    //videoTexture.draw(0, 0);
     
    //finder.draw();
    //ofDrawBitmapStringHighlight(ofToString(finder.size()), 10,
@@ -234,9 +237,10 @@ void ofApp::draw(){
         //Check if images is in memory, and if it is load it
         if ((imageMemory.at(finder.getTracker().getLabelFromIndex(i)) != "NULL")){
         
-     
+            if (drawPictures){
             imageOverlay.loadImage(imageMemory.at(finder.getTracker().getLabelFromIndex(i)));
-            
+            }
+                
             cout << "If not empty";
             cout << endl;
             cout << finder.getTracker().getLabelFromIndex(i);
@@ -256,7 +260,11 @@ void ofApp::draw(){
             cout << imageMemory.at(finder.getTracker().getLabelFromIndex(i));
             cout << endl;
             
-            imageOverlay.loadImage(imageMemory.at(finder.getTracker().getLabelFromIndex(i)));
+            if (drawPictures) {
+                imageOverlay.loadImage(imageMemory.at(finder.getTracker().getLabelFromIndex(i)));
+            }
+            
+        
         }
         
         

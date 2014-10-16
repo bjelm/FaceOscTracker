@@ -27,6 +27,7 @@ class ofApp : public ofBaseApp{
     int 				camWidth;
     int 				camHeight;
     int                 camFrameRate;
+    bool                drawPictures;
     
     ofxCv::ObjectFinder finder;
     ofxOscSender sender;
