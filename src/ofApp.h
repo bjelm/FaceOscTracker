@@ -16,7 +16,7 @@ class ofApp : public ofBaseApp{
 		void update();
 		void draw();
     
-    bool                PS3CAM;
+    bool                showVideo;
     //Ps3 camera
     //ofxPS3EyeGrabber    vidGrabber;
     

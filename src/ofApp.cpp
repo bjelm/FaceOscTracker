@@ -21,10 +21,11 @@ void ofApp::setup(){
     ofSetFrameRate(60);
     
     // Init camera
-    drawPictures    =false;
+    drawPictures    = false;
+    showVideo       = true;
 
-    camWidth 		= 720;	// try to grab at this size.
-    camHeight 		= 480;
+    camWidth 		= 1024;	// try to grab at this size.
+    camHeight 		= 768;
     camFrameRate    = 25;
     
     //we can now get back a list of devices.
@@ -44,7 +45,7 @@ void ofApp::setup(){
     
     //Normal camera
     
-    vidGrabber.setDeviceID(1);
+    vidGrabber.setDeviceID(0);
     vidGrabber.setDesiredFrameRate(camFrameRate);
     vidGrabber.initGrabber(camWidth,camHeight);
     
@@ -74,7 +75,7 @@ void ofApp::setup(){
     finder.setup("haarcascade_frontalface_default.xml");
     
     // Define face tracking presets
-    //finder.setPreset(ObjectFinder::Fast);
+    finder.setPreset(ObjectFinder::Fast);
     
     /*
     finder.setRescale(.3);
@@ -84,17 +85,26 @@ void ofApp::setup(){
     finder.setMaxSizeScale(.8);
     finder.setCannyPruning(false);
     finder.setFindBiggestObject(false);
-    */
     
-    finder.setRescale(.27);
+    
+    finder.setRescale(.2);
     finder.setMinNeighbors(2);
-    finder.setMultiScaleFactor(1.2);
-    finder.setMinSizeScale(.05);
-    finder.setMaxSizeScale(.7);
+    finder.setMultiScaleFactor(1.1);
+    finder.setMinSizeScale(.01);
+    finder.setMaxSizeScale(.5);
     finder.setCannyPruning(true);
     finder.setFindBiggestObject(false);
+    */
+      finder.setRescale(.7);
+      finder.setMinNeighbors(2);
+      finder.setMultiScaleFactor(1.1);
+      finder.setMinSizeScale(.01);
+      finder.setMaxSizeScale(0.4);
+      finder.setCannyPruning(true);
+      finder.setFindBiggestObject(false);
+     
     
-    finder.setUseHistogramEqualization(false);
+    finder.setUseHistogramEqualization(true);
     finder.getTracker().setSmoothingRate(.3);
     
     // Change tracker persistence
@@ -103,7 +113,7 @@ void ofApp::setup(){
     // far an object can move until the tracker considers it a new object.
 
     finder.getTracker().setPersistence(300); // Default: 15
-    finder.getTracker().setMaximumDistance(500); // Default: 64
+    finder.getTracker().setMaximumDistance(200); // Default: 64
     
      ofEnableAlphaBlending();
     
@@ -217,7 +227,10 @@ void ofApp::update(){
 void ofApp::draw(){
     
     //Draw video
-    //videoTexture.draw(0, 0);
+    if (showVideo) {
+     videoTexture.draw(0, 0);
+    }
+   
     
    //finder.draw();
    //ofDrawBitmapStringHighlight(ofToString(finder.size()), 10,
@@ -237,9 +250,10 @@ void ofApp::draw(){
         //Check if images is in memory, and if it is load it
         if ((imageMemory.at(finder.getTracker().getLabelFromIndex(i)) != "NULL")){
         
+            //draw images
             if (drawPictures){
             imageOverlay.loadImage(imageMemory.at(finder.getTracker().getLabelFromIndex(i)));
-            }
+            
                 
             cout << "If not empty";
             cout << endl;
@@ -247,12 +261,16 @@ void ofApp::draw(){
             cout << endl;
             cout << imageMemory.at(finder.getTracker().getLabelFromIndex(i));
             cout << endl;
+            }
             
            //Else add it to memory
         }else{
 
             imageMemory[finder.getTracker().getLabelFromIndex(i)]=animals[(int)ofRandom(0,4)];
             
+            // draw images
+            if (drawPictures) {
+                
             cout << "Else if empty";
             cout << endl;
             cout << finder.getTracker().getLabelFromIndex(i);
@@ -260,8 +278,8 @@ void ofApp::draw(){
             cout << imageMemory.at(finder.getTracker().getLabelFromIndex(i));
             cout << endl;
             
-            if (drawPictures) {
-                imageOverlay.loadImage(imageMemory.at(finder.getTracker().getLabelFromIndex(i)));
+            
+            imageOverlay.loadImage(imageMemory.at(finder.getTracker().getLabelFromIndex(i)));
             }
             
         
@@ -278,7 +296,10 @@ void ofApp::draw(){
         
 
         ofScale(scaleAmount, scaleAmount);
+        
+        if (drawPictures){
         imageOverlay.draw(0, 0);
+        }
         
         ofPopMatrix();
         ofPushMatrix();
