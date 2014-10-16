@@ -34,5 +34,20 @@ class ofApp : public ofBaseApp{
     ofImage imageOverlay;
 
     string animals[5]={"dog1.png","dog2.png","dog3.png","ape1.png","cat1.png"};
- 
+    
+    void audioIn(float * input, int bufferSize, int nChannels);
+    
+    vector <float> left;
+    vector <float> right;
+    vector <float> volHistory;
+    
+    int 	bufferCounter;
+    int 	drawCounter;
+    
+    float smoothedVol;
+    float scaledVol;
+    
+    
+    
+    ofSoundStream soundStream;
 };

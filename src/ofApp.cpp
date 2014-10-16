@@ -13,20 +13,59 @@
 using namespace ofxCv;
 using namespace cv;
 vector<string> imageMemory;
-
+vector<int> colorMemory;
+vector<int> colorMemory2;
 
 //--------------------------------------------------------------
 
 void ofApp::setup(){
-    ofSetFrameRate(60);
+    
+    
+    //Particle
+    
+    ofSetVerticalSync(false);
+    ofSetCircleResolution(72);
+    //ofSetBackgroundAuto(false);
+    //ofBackground(0, 0, 0);
+    //ofEnableAlphaBlending();
+    ofSetFrameRate(30);
+    //ofSetBackgroundAuto(false);
+    // 0 output channels,
+    // 2 input channels
+    // 44100 samples per second
+    // 256 samples per buffer
+    // 4 num buffers (latency)
+    
+    soundStream.listDevices();
+    
+    //if you want to set a different device id
+    soundStream.setDeviceID(3); //bear in mind the device id corresponds to all audio devices, including  input-only and output-only devices.
+    int bufferSize = 128;
+    
+    
+    left.assign(bufferSize, 0.0);
+    right.assign(bufferSize, 0.0);
+    volHistory.assign(400, 0.0);
+    
+    bufferCounter	= 0;
+    drawCounter		= 0;
+    smoothedVol     = 0.0;
+    scaledVol		= 0.0;
+    
+    soundStream.setup(this, 0, 2, 44100, bufferSize, 4);
+    
+    
+    //
+    
+    ofSetFrameRate(25);
     
     // Init camera
     drawPictures    = false;
-    showVideo       = true;
+    showVideo       = false;
 
-    camWidth 		= 1024;	// try to grab at this size.
-    camHeight 		= 768;
-    camFrameRate    = 25;
+    camWidth 		= 720;	// try to grab at this size.
+    camHeight 		= 480;
+    camFrameRate    = 30;
     
     //we can now get back a list of devices.
     vector<ofVideoDevice> devices = vidGrabber.listDevices();
@@ -69,6 +108,8 @@ void ofApp::setup(){
     ofSetVerticalSync(false);
 
     imageMemory.assign(300,"NULL");
+    colorMemory.assign(300,0);
+    colorMemory2.assign(300,0);
 
     
     //finder.setup("haarcascade_frontalface_alt2.xml");
@@ -95,25 +136,24 @@ void ofApp::setup(){
     finder.setCannyPruning(true);
     finder.setFindBiggestObject(false);
     */
-      finder.setRescale(.7);
-      finder.setMinNeighbors(2);
-      finder.setMultiScaleFactor(1.1);
+      finder.setRescale(.4); //0.7= good distance but slow
+      finder.setMinNeighbors(5);
+      finder.setMultiScaleFactor(1.2);
       finder.setMinSizeScale(.01);
-      finder.setMaxSizeScale(0.4);
+      finder.setMaxSizeScale(0.8);
       finder.setCannyPruning(true);
       finder.setFindBiggestObject(false);
-     
     
     finder.setUseHistogramEqualization(true);
-    finder.getTracker().setSmoothingRate(.3);
+    finder.getTracker().setSmoothingRate(.4);
     
     // Change tracker persistence
     // "persistence" determines how many frames an object can last without being
     // seen until the tracker forgets about it. "maximumDistance" determines how
     // far an object can move until the tracker considers it a new object.
 
-    finder.getTracker().setPersistence(300); // Default: 15
-    finder.getTracker().setMaximumDistance(200); // Default: 64
+    finder.getTracker().setPersistence(100); // Default: 15
+    finder.getTracker().setMaximumDistance(80); // Default: 64
     
      ofEnableAlphaBlending();
     
@@ -124,6 +164,21 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 
 void ofApp::update(){
+    
+    //Particle
+    
+    //lets scale the vol up to a 0-1 range
+    scaledVol = ofMap(smoothedVol, 0.0, 0.17, 0.0, 1.0, true);
+    
+    //lets record the volume into an array
+    volHistory.push_back( scaledVol );
+    
+    //if we are bigger the the size we want to record - lets drop the oldest value
+    if( volHistory.size() >= 400 ){
+        volHistory.erase(volHistory.begin(), volHistory.begin()+1);
+    }
+    
+    //particle end
     
     // Update camera and finder
     vidGrabber.update();
@@ -245,45 +300,95 @@ void ofApp::draw(){
 
         ofRectangle object = finder.getObjectSmoothed(i);
 
-        //Image memory
-        
-        //Check if images is in memory, and if it is load it
-        if ((imageMemory.at(finder.getTracker().getLabelFromIndex(i)) != "NULL")){
-        
-            //draw images
-            if (drawPictures){
-            imageOverlay.loadImage(imageMemory.at(finder.getTracker().getLabelFromIndex(i)));
+        //DRAW IMAGES
+        if (drawPictures) {
+            //Check if images is in memory, and if it is load it
+            if ((imageMemory.at(finder.getTracker().getLabelFromIndex(i)) != "NULL")){
             
+                //draw images
+               
+                imageOverlay.loadImage(imageMemory.at(finder.getTracker().getLabelFromIndex(i)));
                 
-            cout << "If not empty";
-            cout << endl;
-            cout << finder.getTracker().getLabelFromIndex(i);
-            cout << endl;
-            cout << imageMemory.at(finder.getTracker().getLabelFromIndex(i));
-            cout << endl;
-            }
-            
-           //Else add it to memory
-        }else{
+                    
+                cout << "If not empty";
+                cout << endl;
+                cout << finder.getTracker().getLabelFromIndex(i);
+                cout << endl;
+                cout << imageMemory.at(finder.getTracker().getLabelFromIndex(i));
+                cout << endl;
+               
+                
+               //Else add it to memory
+            }else{
 
-            imageMemory[finder.getTracker().getLabelFromIndex(i)]=animals[(int)ofRandom(0,4)];
-            
-            // draw images
-            if (drawPictures) {
+                imageMemory[finder.getTracker().getLabelFromIndex(i)]=animals[(int)ofRandom(0,4)];
                 
-            cout << "Else if empty";
-            cout << endl;
-            cout << finder.getTracker().getLabelFromIndex(i);
-            cout << endl;
-            cout << imageMemory.at(finder.getTracker().getLabelFromIndex(i));
-            cout << endl;
+                // draw images
+               
+                    
+                cout << "Else if empty";
+                cout << endl;
+                cout << finder.getTracker().getLabelFromIndex(i);
+                cout << endl;
+                cout << imageMemory.at(finder.getTracker().getLabelFromIndex(i));
+                cout << endl;
+                
+                
+                imageOverlay.loadImage(imageMemory.at(finder.getTracker().getLabelFromIndex(i)));
+               
+                
             
-            
-            imageOverlay.loadImage(imageMemory.at(finder.getTracker().getLabelFromIndex(i)));
             }
-            
-        
         }
+        
+        
+        //DRAW PARTICLES
+        //Check if images is in memory, and if it is load it
+        if ((colorMemory.at(finder.getTracker().getLabelFromIndex(i)) != 0)){
+            
+            //Particle start
+            
+            ofSetColor(colorMemory[finder.getTracker().getLabelFromIndex(i)], scaledVol *100, colorMemory2[finder.getTracker().getLabelFromIndex(i)]);
+            ofFill();
+            
+            ofCircle(object.getX()+object.width / 2., object.getY()+ object.height * .42, 50+scaledVol * 200.0f);
+            
+            
+            ofSetColor(35, 100, scaledVol *135,50);
+            ofFill();
+            ofCircle(object.getX()+object.width / 2., object.getY()+ object.height * .42, 25+scaledVol * 200.0f);
+            
+            
+            
+            //Particle end
+
+            
+            //Else add it to memory
+        }else{
+            
+            colorMemory[finder.getTracker().getLabelFromIndex(i)]=(int)ofRandom(1,255);
+            colorMemory2[finder.getTracker().getLabelFromIndex(i)]=(int)ofRandom(1,255);
+            
+            //Particle start
+            
+            ofSetColor(colorMemory[finder.getTracker().getLabelFromIndex(i)], scaledVol *100, colorMemory2[finder.getTracker().getLabelFromIndex(i)]);
+            ofFill();
+            
+            ofCircle(object.getX()+object.width / 2., object.getY()+ object.height * .42, 50+scaledVol * 200.0f);
+            
+            
+            ofSetColor(35, 100, scaledVol *135,50);
+            ofFill();
+            ofCircle(object.getX()+object.width / 2., object.getY()+ object.height * .42, 25+scaledVol * 200.0f);
+            
+            
+            
+            //Particle end
+            
+        }
+
+        //NEW
+        
         
         
         imageOverlay.setAnchorPercent(.5, .5);
@@ -308,4 +413,36 @@ void ofApp::draw(){
         //ofLine(ofVec2f(), toOf(finder.getVelocity(i)) * 10);
         ofPopMatrix();
     }
+}
+
+
+//--------------------------------------------------------------
+void ofApp::audioIn(float * input, int bufferSize, int nChannels){
+    
+    float curVol = 0.0;
+    
+    // samples are "interleaved"
+    int numCounted = 0;
+    
+    //lets go through each sample and calculate the root mean square which is a rough way to calculate volume
+    for (int i = 0; i < bufferSize; i++){
+        left[i]		= input[i*2]*0.5;
+        right[i]	= input[i*2+1]*0.5;
+        
+        curVol += left[i] * left[i];
+        curVol += right[i] * right[i];
+        numCounted+=2;
+    }
+    
+    //this is how we get the mean of rms
+    curVol /= (float)numCounted;
+    
+    // this is how we get the root of rms
+    curVol = sqrt( curVol );
+    
+    smoothedVol *= 0.93;
+    smoothedVol += 0.07 * curVol;
+    
+    bufferCounter++;
+    
 }
