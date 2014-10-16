@@ -21,9 +21,10 @@ class ofApp : public ofBaseApp{
     //ofxPS3EyeGrabber    vidGrabber;
     
     //Normal camera
-    ofVideoGrabber 	vidGrabber;
+    ofVideoGrabber 	    vidGrabber;
     unsigned char * 	videoInverted;
-    ofTexture			videoTexture;
+    ofImage             videoTexture;
+    //ofTexture			videoTexture;
     int 				camWidth;
     int 				camHeight;
     int                 camFrameRate;
@@ -46,7 +47,10 @@ class ofApp : public ofBaseApp{
     
     float smoothedVol;
     float scaledVol;
-    
+    float x;
+    float y;
+    float r;
+    float easing = 0.05;
     
     
     ofSoundStream soundStream;

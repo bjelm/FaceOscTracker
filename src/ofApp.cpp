@@ -21,14 +21,30 @@ vector<int> colorMemory2;
 void ofApp::setup(){
     
     
+    // Init camera
+    drawPictures    = false;
+    showVideo       = false;
+    
+    camWidth 		= 800;	// try to grab at this size.
+    camHeight 		= 600;
+    camFrameRate    = 25;
+    
     //Particle
     
+    if (showVideo) {
+        ofEnableAlphaBlending();
+        ofSetBackgroundAuto(false);
+    }else{
+        ofSetBackgroundAuto(false);
+        ofBackground(0, 0, 0);
+        ofEnableAlphaBlending();
+    }
+    
     ofSetVerticalSync(false);
-    ofSetCircleResolution(72);
-    //ofSetBackgroundAuto(false);
-    //ofBackground(0, 0, 0);
-    //ofEnableAlphaBlending();
-    ofSetFrameRate(30);
+    ofSetCircleResolution(30);
+
+    ofSetFrameRate(25);
+    
     //ofSetBackgroundAuto(false);
     // 0 output channels,
     // 2 input channels
@@ -40,7 +56,7 @@ void ofApp::setup(){
     
     //if you want to set a different device id
     soundStream.setDeviceID(3); //bear in mind the device id corresponds to all audio devices, including  input-only and output-only devices.
-    int bufferSize = 128;
+    int bufferSize = 512;
     
     
     left.assign(bufferSize, 0.0);
@@ -59,13 +75,7 @@ void ofApp::setup(){
     
     ofSetFrameRate(25);
     
-    // Init camera
-    drawPictures    = false;
-    showVideo       = false;
 
-    camWidth 		= 720;	// try to grab at this size.
-    camHeight 		= 480;
-    camFrameRate    = 30;
     
     //we can now get back a list of devices.
     vector<ofVideoDevice> devices = vidGrabber.listDevices();
@@ -103,9 +113,8 @@ void ofApp::setup(){
     
     
     videoInverted 	= new unsigned char[camWidth*camHeight*3];
-    videoTexture.allocate(camWidth,camHeight, GL_RGB);
-    
-    ofSetVerticalSync(false);
+    videoTexture.allocate(camWidth,camHeight, OF_IMAGE_COLOR);
+    //videoTexture.allocate(camWidth,camHeight, GL_RGB);
 
     imageMemory.assign(300,"NULL");
     colorMemory.assign(300,0);
@@ -137,14 +146,14 @@ void ofApp::setup(){
     finder.setFindBiggestObject(false);
     */
       finder.setRescale(.4); //0.7= good distance but slow
-      finder.setMinNeighbors(5);
-      finder.setMultiScaleFactor(1.2);
+      finder.setMinNeighbors(6);
+      finder.setMultiScaleFactor(1.1);
       finder.setMinSizeScale(.01);
       finder.setMaxSizeScale(0.8);
       finder.setCannyPruning(true);
       finder.setFindBiggestObject(false);
     
-    finder.setUseHistogramEqualization(true);
+    finder.setUseHistogramEqualization(false);
     finder.getTracker().setSmoothingRate(.4);
     
     // Change tracker persistence
@@ -153,9 +162,8 @@ void ofApp::setup(){
     // far an object can move until the tracker considers it a new object.
 
     finder.getTracker().setPersistence(100); // Default: 15
-    finder.getTracker().setMaximumDistance(80); // Default: 64
-    
-     ofEnableAlphaBlending();
+    finder.getTracker().setMaximumDistance(300); // Default: 64
+
     
     // Init OSC sender
     sender.setup(HOST, PORT);
@@ -185,8 +193,13 @@ void ofApp::update(){
     
     if (vidGrabber.isFrameNew())
     {
-        finder.update(vidGrabber);
-        videoTexture.loadData(vidGrabber.getPixelsRef());
+        videoTexture.setFromPixels(vidGrabber.getPixelsRef());
+        //videoTexture.loadData(vidGrabber.getPixelsRef());
+        
+        videoTexture.mirror(false, true);
+        videoTexture.update();
+        
+        finder.update(videoTexture);
     }
     
     // Resseting osc messages
@@ -252,7 +265,7 @@ void ofApp::update(){
         ofxOscMessage area;
         
         area.setAddress(str);
-        area.addIntArg(areaSize/100);
+        area.addIntArg(areaSize/10);
         
         sender.sendMessage(area);
 
@@ -281,9 +294,15 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     
+    
     //Draw video
     if (showVideo) {
      videoTexture.draw(0, 0);
+    }else{
+        
+    ofSetColor(0, 0, 0,10);
+    ofFill();
+    ofRect(0, 0, ofGetScreenWidth(), ofGetScreenHeight());
     }
    
     
@@ -299,6 +318,30 @@ void ofApp::draw(){
     for(int i = 0; i < finder.size(); i++) {
 
         ofRectangle object = finder.getObjectSmoothed(i);
+        
+        
+        //Shader
+        float targetX = object.x;
+        float dx = targetX - x;
+        if(abs(dx) > 1) {
+            x += dx * easing;
+        }
+        
+        float targetY = object.y;
+        float dy = targetY - y;
+        if(abs(dy) > 1) {
+            y += dy * easing;
+        }
+        
+        /*
+        float targetR = scaledVol*100.0f;
+        float dr = targetR - r;
+        if(abs(dr) > 1) {
+            r += dr * easing;
+        }
+         */
+        //
+        
 
         //DRAW IMAGES
         if (drawPictures) {
@@ -351,12 +394,12 @@ void ofApp::draw(){
             ofSetColor(colorMemory[finder.getTracker().getLabelFromIndex(i)], scaledVol *100, colorMemory2[finder.getTracker().getLabelFromIndex(i)]);
             ofFill();
             
-            ofCircle(object.getX()+object.width / 2., object.getY()+ object.height * .42, 50+scaledVol * 200.0f);
+            ofCircle(object.x+object.width / 2.,object.y+ object.height * .42, 50+scaledVol * 200.0f);
             
             
             ofSetColor(35, 100, scaledVol *135,50);
             ofFill();
-            ofCircle(object.getX()+object.width / 2., object.getY()+ object.height * .42, 25+scaledVol * 200.0f);
+            ofCircle(object.x+object.width / 2., object.y+ object.height * .42, 25+scaledVol * 200.0f);
             
             
             
@@ -374,12 +417,12 @@ void ofApp::draw(){
             ofSetColor(colorMemory[finder.getTracker().getLabelFromIndex(i)], scaledVol *100, colorMemory2[finder.getTracker().getLabelFromIndex(i)]);
             ofFill();
             
-            ofCircle(object.getX()+object.width / 2., object.getY()+ object.height * .42, 50+scaledVol * 200.0f);
+            ofCircle(object.x+object.width / 2., object.y+ object.height * .42, 50+scaledVol * 200.0f);
             
             
             ofSetColor(35, 100, scaledVol *135,50);
             ofFill();
-            ofCircle(object.getX()+object.width / 2., object.getY()+ object.height * .42, 25+scaledVol * 200.0f);
+            ofCircle(object.x+object.width / 2., y+ object.height * .42, 25+scaledVol * 200.0f);
             
             
             
@@ -409,7 +452,7 @@ void ofApp::draw(){
         ofPopMatrix();
         ofPushMatrix();
         ofTranslate(object.getPosition());
-        ofDrawBitmapStringHighlight(ofToString(finder.getLabel(i)), 0, 0);
+        //ofDrawBitmapStringHighlight(ofToString(finder.getLabel(i)), 0, 0);
         //ofLine(ofVec2f(), toOf(finder.getVelocity(i)) * 10);
         ofPopMatrix();
     }
