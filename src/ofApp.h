@@ -10,11 +10,13 @@
 #define PORT 3333
 
 class ofApp : public ofBaseApp{
+    
 
 	public:
 		void setup();
 		void update();
 		void draw();
+
     
     bool                showVideo;
     //Ps3 camera
@@ -28,6 +30,7 @@ class ofApp : public ofBaseApp{
     int 				camWidth;
     int 				camHeight;
     int                 camFrameRate;
+    int                 reactionDistance;
     bool                drawPictures;
     
     ofxCv::ObjectFinder finder;
@@ -52,6 +55,10 @@ class ofApp : public ofBaseApp{
     float r;
     float easing = 0.05;
     
+    float reMappedX;
+    float reMappedY;
+    
+
     
     ofSoundStream soundStream;
 };

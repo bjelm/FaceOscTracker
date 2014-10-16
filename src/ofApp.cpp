@@ -20,30 +20,30 @@ vector<int> colorMemory2;
 
 void ofApp::setup(){
     
-    
+    ofEnableSmoothing();
     // Init camera
     drawPictures    = false;
     showVideo       = false;
     
-    camWidth 		= 800;	// try to grab at this size.
-    camHeight 		= 600;
-    camFrameRate    = 25;
+    camWidth 		= 720;	// try to grab at this size.
+    camHeight 		= 480;
+    camFrameRate    = 30;
     
-    //Particle
+    reactionDistance = 100; //Tweak the osc output to fit trigger reaction for playing
+    
+    ofSetVerticalSync(true);
+    ofSetCircleResolution(50);
     
     if (showVideo) {
-        ofEnableAlphaBlending();
         ofSetBackgroundAuto(false);
+        //ofEnableAlphaBlending();
+        ofSetFrameRate(90);
     }else{
-        ofSetBackgroundAuto(false);
         ofBackground(0, 0, 0);
         ofEnableAlphaBlending();
+        ofSetFrameRate(90);
+        ofSetBackgroundAuto(false);
     }
-    
-    ofSetVerticalSync(false);
-    ofSetCircleResolution(30);
-
-    ofSetFrameRate(25);
     
     //ofSetBackgroundAuto(false);
     // 0 output channels,
@@ -55,7 +55,7 @@ void ofApp::setup(){
     soundStream.listDevices();
     
     //if you want to set a different device id
-    soundStream.setDeviceID(3); //bear in mind the device id corresponds to all audio devices, including  input-only and output-only devices.
+    soundStream.setDeviceID(5); //bear in mind the device id corresponds to all audio devices, including  input-only and output-only devices.
     int bufferSize = 512;
     
     
@@ -72,9 +72,7 @@ void ofApp::setup(){
     
     
     //
-    
-    ofSetFrameRate(25);
-    
+
 
     
     //we can now get back a list of devices.
@@ -111,9 +109,11 @@ void ofApp::setup(){
     */
     //ONLY PS3
     
+    /*
     
     videoInverted 	= new unsigned char[camWidth*camHeight*3];
     videoTexture.allocate(camWidth,camHeight, OF_IMAGE_COLOR);
+    */
     //videoTexture.allocate(camWidth,camHeight, GL_RGB);
 
     imageMemory.assign(300,"NULL");
@@ -125,7 +125,7 @@ void ofApp::setup(){
     finder.setup("haarcascade_frontalface_default.xml");
     
     // Define face tracking presets
-    finder.setPreset(ObjectFinder::Fast);
+    //finder.setPreset(ObjectFinder::Fast);
     
     /*
     finder.setRescale(.3);
@@ -145,16 +145,17 @@ void ofApp::setup(){
     finder.setCannyPruning(true);
     finder.setFindBiggestObject(false);
     */
-      finder.setRescale(.4); //0.7= good distance but slow
-      finder.setMinNeighbors(6);
+    
+      finder.setRescale(.3); //0.7= good distance but slow
+      finder.setMinNeighbors(7);
       finder.setMultiScaleFactor(1.1);
-      finder.setMinSizeScale(.01);
+      finder.setMinSizeScale(.02);
       finder.setMaxSizeScale(0.8);
       finder.setCannyPruning(true);
       finder.setFindBiggestObject(false);
     
-    finder.setUseHistogramEqualization(false);
-    finder.getTracker().setSmoothingRate(.4);
+    finder.setUseHistogramEqualization(true);
+    finder.getTracker().setSmoothingRate(.3);
     
     // Change tracker persistence
     // "persistence" determines how many frames an object can last without being
@@ -162,11 +163,12 @@ void ofApp::setup(){
     // far an object can move until the tracker considers it a new object.
 
     finder.getTracker().setPersistence(100); // Default: 15
-    finder.getTracker().setMaximumDistance(300); // Default: 64
+    finder.getTracker().setMaximumDistance(camWidth/3); // Default: 64
 
     
     // Init OSC sender
     sender.setup(HOST, PORT);
+    
 }
 
 //--------------------------------------------------------------
@@ -265,7 +267,7 @@ void ofApp::update(){
         ofxOscMessage area;
         
         area.setAddress(str);
-        area.addIntArg(areaSize/10);
+        area.addIntArg(areaSize/reactionDistance);
         
         sender.sendMessage(area);
 
@@ -297,12 +299,22 @@ void ofApp::draw(){
     
     //Draw video
     if (showVideo) {
-     videoTexture.draw(0, 0);
-    }else{
         
-    ofSetColor(0, 0, 0,10);
-    ofFill();
-    ofRect(0, 0, ofGetScreenWidth(), ofGetScreenHeight());
+        float videoW=videoTexture.getWidth();
+        float ratio=ofGetWidth()/videoW;
+        ofScale(ratio, ratio);
+        videoTexture.draw(0,0);
+        
+    }else{
+   
+        float videoW=videoTexture.getWidth();
+        float ratio=ofGetWidth()/videoW;
+        ofScale(ratio, ratio);
+            
+        ofSetColor(0, 0, 0,15);
+        ofFill();
+        ofRect(0, 0, ofGetScreenWidth(), ofGetScreenHeight());
+        
     }
    
     
@@ -319,15 +331,22 @@ void ofApp::draw(){
 
         ofRectangle object = finder.getObjectSmoothed(i);
         
+        //reMappedX = ofMap(object.x, 0, camWidth, 0, ofGetScreenWidth());   // circle X
+        //reMappedY = ofMap(object.y, 0, camHeight, 0, ofGetScreenHeight());  // circle Y
+        
+        reMappedX = object.x;
+        reMappedY = object.y;
+        
+        
         
         //Shader
-        float targetX = object.x;
+        float targetX = reMappedX;
         float dx = targetX - x;
         if(abs(dx) > 1) {
             x += dx * easing;
         }
         
-        float targetY = object.y;
+        float targetY = reMappedY;
         float dy = targetY - y;
         if(abs(dy) > 1) {
             y += dy * easing;
@@ -390,17 +409,17 @@ void ofApp::draw(){
         if ((colorMemory.at(finder.getTracker().getLabelFromIndex(i)) != 0)){
             
             //Particle start
+            if(!showVideo){
+                ofSetColor(colorMemory[finder.getTracker().getLabelFromIndex(i)], scaledVol *100, colorMemory2[finder.getTracker().getLabelFromIndex(i)]);
+                ofFill();
+                
+                ofCircle(reMappedX+object.width / 2.,reMappedY+ object.height * .42, 50+scaledVol * 100.0f);
+
+                ofSetColor(35, 100, scaledVol * 135,50);
+                ofFill();
+            }
             
-            ofSetColor(colorMemory[finder.getTracker().getLabelFromIndex(i)], scaledVol *100, colorMemory2[finder.getTracker().getLabelFromIndex(i)]);
-            ofFill();
-            
-            ofCircle(object.x+object.width / 2.,object.y+ object.height * .42, 50+scaledVol * 200.0f);
-            
-            
-            ofSetColor(35, 100, scaledVol *135,50);
-            ofFill();
-            ofCircle(object.x+object.width / 2., object.y+ object.height * .42, 25+scaledVol * 200.0f);
-            
+            ofCircle(reMappedX+object.width / 2., reMappedY+ object.height * .42, 25+scaledVol * 100.0f);
             
             
             //Particle end
@@ -413,18 +432,19 @@ void ofApp::draw(){
             colorMemory2[finder.getTracker().getLabelFromIndex(i)]=(int)ofRandom(1,255);
             
             //Particle start
+            if(!showVideo){
+                ofSetColor(colorMemory[finder.getTracker().getLabelFromIndex(i)], scaledVol *100, colorMemory2[finder.getTracker().getLabelFromIndex(i)]);
+                ofFill();
+                
+                ofCircle(reMappedX+object.width / 2., reMappedY+ object.height * .42, 50+scaledVol * 100.0f);
+                
+                
+                ofSetColor(35, 100, scaledVol *135,50);
+                ofFill();
+            }
+            ofCircle(reMappedX+object.width / 2., reMappedY+ object.height * .42, 25+scaledVol * 100.0f);
             
-            ofSetColor(colorMemory[finder.getTracker().getLabelFromIndex(i)], scaledVol *100, colorMemory2[finder.getTracker().getLabelFromIndex(i)]);
-            ofFill();
-            
-            ofCircle(object.x+object.width / 2., object.y+ object.height * .42, 50+scaledVol * 200.0f);
-            
-            
-            ofSetColor(35, 100, scaledVol *135,50);
-            ofFill();
-            ofCircle(object.x+object.width / 2., y+ object.height * .42, 25+scaledVol * 200.0f);
-            
-            
+  
             
             //Particle end
             
@@ -432,7 +452,7 @@ void ofApp::draw(){
 
         //NEW
         
-        
+        if (drawPictures){
         
         imageOverlay.setAnchorPercent(.5, .5);
         
@@ -440,12 +460,11 @@ void ofApp::draw(){
         
 
         ofPushMatrix();
-        ofTranslate(object.x + object.width / 2., object.y + object.height * .42);
+        ofTranslate(reMappedX + object.width / 2., reMappedY + object.height * .42);
         
-
         ofScale(scaleAmount, scaleAmount);
         
-        if (drawPictures){
+        
         imageOverlay.draw(0, 0);
         }
         
