@@ -20,16 +20,16 @@ vector<int> colorMemory2;
 
 void ofApp::setup(){
     
-    ofEnableSmoothing();
+    //ofEnableSmoothing();
     // Init camera
     drawPictures    = false;
     showVideo       = false;
     
-    camWidth 		= 720;	// try to grab at this size.
+    camWidth 		= 640;	// try to grab at this size.
     camHeight 		= 480;
-    camFrameRate    = 30;
+    camFrameRate    = 120;
     
-    reactionDistance = 100; //Tweak the osc output to fit trigger reaction for playing
+    reactionDistance = 10; //Tweak the osc output to fit trigger reaction for playing
     
     ofSetVerticalSync(true);
     ofSetCircleResolution(50);
@@ -39,7 +39,7 @@ void ofApp::setup(){
         //ofEnableAlphaBlending();
         ofSetFrameRate(90);
     }else{
-        ofBackground(0, 0, 0);
+        ofBackground(255, 255, 255);
         ofEnableAlphaBlending();
         ofSetFrameRate(90);
         ofSetBackgroundAuto(false);
@@ -92,7 +92,7 @@ void ofApp::setup(){
     
     //Normal camera
     
-    vidGrabber.setDeviceID(0);
+    vidGrabber.setDeviceID(1);
     vidGrabber.setDesiredFrameRate(camFrameRate);
     vidGrabber.initGrabber(camWidth,camHeight);
     
@@ -136,34 +136,34 @@ void ofApp::setup(){
     finder.setCannyPruning(false);
     finder.setFindBiggestObject(false);
     
-    
-    finder.setRescale(.2);
-    finder.setMinNeighbors(2);
-    finder.setMultiScaleFactor(1.1);
-    finder.setMinSizeScale(.01);
-    finder.setMaxSizeScale(.5);
-    finder.setCannyPruning(true);
-    finder.setFindBiggestObject(false);
+     finder.//Accurate
+     finder.setRescale(.5);
+     finder.setMinNeighbors(6);
+     finder.setMultiScaleFactor(1.02);
+     finder.setMinSizeScale(.1);
+     finder.setMaxSizeScale(1);
+     finder.setCannyPruning(true);
+     finder.setFindBiggestObject(false);
     */
     
-      finder.setRescale(.3); //0.7= good distance but slow
-      finder.setMinNeighbors(7);
+      finder.setRescale(.4); //0.7= good distance but slow
+      finder.setMinNeighbors(6);
       finder.setMultiScaleFactor(1.1);
-      finder.setMinSizeScale(.02);
+      finder.setMinSizeScale(.03);
       finder.setMaxSizeScale(0.8);
       finder.setCannyPruning(true);
       finder.setFindBiggestObject(false);
     
     finder.setUseHistogramEqualization(true);
-    finder.getTracker().setSmoothingRate(.3);
+    finder.getTracker().setSmoothingRate(.5);
     
     // Change tracker persistence
     // "persistence" determines how many frames an object can last without being
     // seen until the tracker forgets about it. "maximumDistance" determines how
     // far an object can move until the tracker considers it a new object.
 
-    finder.getTracker().setPersistence(100); // Default: 15
-    finder.getTracker().setMaximumDistance(camWidth/3); // Default: 64
+    finder.getTracker().setPersistence(150); // Default: 15
+    finder.getTracker().setMaximumDistance(camWidth/2); // Default: 64
 
     
     // Init OSC sender
@@ -311,7 +311,7 @@ void ofApp::draw(){
         float ratio=ofGetWidth()/videoW;
         ofScale(ratio, ratio);
             
-        ofSetColor(0, 0, 0,15);
+        ofSetColor(255, 255, 255,15);
         ofFill();
         ofRect(0, 0, ofGetScreenWidth(), ofGetScreenHeight());
         
@@ -413,14 +413,16 @@ void ofApp::draw(){
                 ofSetColor(colorMemory[finder.getTracker().getLabelFromIndex(i)], scaledVol *100, colorMemory2[finder.getTracker().getLabelFromIndex(i)]);
                 ofFill();
                 
-                ofCircle(reMappedX+object.width / 2.,reMappedY+ object.height * .42, 50+scaledVol * 100.0f);
+                ofCircle(reMappedX+object.width / 2.,reMappedY+ object.height * .42, 50+scaledVol * 200.0f);
 
                 ofSetColor(35, 100, scaledVol * 135,50);
                 ofFill();
+                ofCircle(reMappedX+object.width / 2., reMappedY+ object.height * .42, 25+scaledVol * 200.0f);
+            }else{
+                ofSetColor(35, 100, scaledVol * 135,50);
+                ofFill();
+            ofCircle(reMappedX+object.width / 2., reMappedY+ object.height * .42, 25+scaledVol * 200.0f);
             }
-            
-            ofCircle(reMappedX+object.width / 2., reMappedY+ object.height * .42, 25+scaledVol * 100.0f);
-            
             
             //Particle end
 
@@ -436,14 +438,16 @@ void ofApp::draw(){
                 ofSetColor(colorMemory[finder.getTracker().getLabelFromIndex(i)], scaledVol *100, colorMemory2[finder.getTracker().getLabelFromIndex(i)]);
                 ofFill();
                 
-                ofCircle(reMappedX+object.width / 2., reMappedY+ object.height * .42, 50+scaledVol * 100.0f);
-                
+                ofCircle(reMappedX+object.width / 2., reMappedY+ object.height * .42, 50+scaledVol * 200.0f);
                 
                 ofSetColor(35, 100, scaledVol *135,50);
                 ofFill();
+                ofCircle(reMappedX+object.width / 2., reMappedY+ object.height * .42, 25+scaledVol * 200.0f);
+            }else{
+                ofSetColor(35, 100, scaledVol *135,50);
+                ofFill();
+            ofCircle(reMappedX+object.width / 2., reMappedY+ object.height * .42, 25+scaledVol * 200.0f);
             }
-            ofCircle(reMappedX+object.width / 2., reMappedY+ object.height * .42, 25+scaledVol * 100.0f);
-            
   
             
             //Particle end
