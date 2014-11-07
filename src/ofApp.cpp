@@ -12,6 +12,8 @@
 
 using namespace ofxCv;
 using namespace cv;
+int cameraDevice =0;
+int inputAdioDevice=0;
 vector<string> imageMemory;
 vector<int> colorMemory;
 vector<int> colorMemory2;
@@ -55,7 +57,7 @@ void ofApp::setup(){
     soundStream.listDevices();
     
     //if you want to set a different device id
-    soundStream.setDeviceID(5); //bear in mind the device id corresponds to all audio devices, including  input-only and output-only devices.
+    soundStream.setDeviceID(inputAdioDevice); //bear in mind the device id corresponds to all audio devices, including  input-only and output-only devices.
     int bufferSize = 512;
     
     
@@ -92,7 +94,7 @@ void ofApp::setup(){
     
     //Normal camera
     
-    vidGrabber.setDeviceID(1);
+    vidGrabber.setDeviceID(cameraDevice);
     vidGrabber.setDesiredFrameRate(camFrameRate);
     vidGrabber.initGrabber(camWidth,camHeight);
     
@@ -125,7 +127,7 @@ void ofApp::setup(){
     finder.setup("haarcascade_frontalface_default.xml");
     
     // Define face tracking presets
-    //finder.setPreset(ObjectFinder::Fast);
+    finder.setPreset(ObjectFinder::Fast);
     
     /*
     finder.setRescale(.3);
@@ -144,7 +146,7 @@ void ofApp::setup(){
      finder.setMaxSizeScale(1);
      finder.setCannyPruning(true);
      finder.setFindBiggestObject(false);
-    */
+    
     
       finder.setRescale(.4); //0.7= good distance but slow
       finder.setMinNeighbors(6);
@@ -153,7 +155,7 @@ void ofApp::setup(){
       finder.setMaxSizeScale(0.8);
       finder.setCannyPruning(true);
       finder.setFindBiggestObject(false);
-    
+    */
     finder.setUseHistogramEqualization(true);
     finder.getTracker().setSmoothingRate(.5);
     
