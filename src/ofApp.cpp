@@ -10,26 +10,49 @@
 #include <iostream>
 #include <vector>
 
+int cameraDevice;
+int inputAdioDevice;
 using namespace ofxCv;
 using namespace cv;
-int cameraDevice =0;
-int inputAdioDevice=0;
+
 vector<string> imageMemory;
 vector<int> colorMemory;
 vector<int> colorMemory2;
 
-//--------------------------------------------------------------
+string animals[6]={"dog1.png","dog2.png","dog3.png","ape1.png","cat1.png","sunglasses.png"};
 
 void ofApp::setup(){
-    
-    //ofEnableSmoothing();
-    // Init camera
+
+    // Init camera, see the available video devices in the consolse
     drawPictures    = false;
     showVideo       = false;
+    cameraDevice    = 0;
     
-    camWidth 		= 640;	// try to grab at this size.
+    //Camera settings
+    camWidth 		= 640;
     camHeight 		= 480;
     camFrameRate    = 120;
+    
+    //Audio device, see the available audio devices in the consolse
+    inputAdioDevice = 0;
+    
+    
+    //finder.setup("haarcascade_frontalface_alt2.xml");
+    finder.setup("haarcascade_frontalface_default.xml");
+    
+    //Face tracking presets, the more sensitive, the more processing power it takes choose between: Fast, Accurate , Sensitive
+    finder.setPreset(ObjectFinder::Fast);
+
+    //Manual tracking parapmeters Uncomment to activate
+    /*
+     finder.setRescale(.3);
+     finder.setMinNeighbors(2);
+     finder.setMultiScaleFactor(1.2);
+     finder.setMinSizeScale(.03);
+     finder.setMaxSizeScale(.8);
+     finder.setCannyPruning(false);
+     finder.setFindBiggestObject(false);
+     */
     
     reactionDistance = 10; //Tweak the osc output to fit trigger reaction for playing
     
@@ -47,13 +70,7 @@ void ofApp::setup(){
         ofSetBackgroundAuto(false);
     }
     
-    //ofSetBackgroundAuto(false);
-    // 0 output channels,
-    // 2 input channels
-    // 44100 samples per second
-    // 256 samples per buffer
-    // 4 num buffers (latency)
-    
+    //List sounddevices in the
     soundStream.listDevices();
     
     //if you want to set a different device id
@@ -72,14 +89,8 @@ void ofApp::setup(){
     
     soundStream.setup(this, 0, 2, 44100, bufferSize, 4);
     
-    
-    //
-
-
-    
     //we can now get back a list of devices.
     vector<ofVideoDevice> devices = vidGrabber.listDevices();
-    
     
     for(int i = 0; i < devices.size(); i++){
         cout << devices[i].id << ": " << devices[i].deviceName;
@@ -93,11 +104,11 @@ void ofApp::setup(){
     
     
     //Normal camera
-    
+
     vidGrabber.setDeviceID(cameraDevice);
     vidGrabber.setDesiredFrameRate(camFrameRate);
     vidGrabber.initGrabber(camWidth,camHeight);
-    
+
     
     //ONLY PS3
     /*
@@ -109,53 +120,11 @@ void ofApp::setup(){
     vidGrabber.setBrightness(30);
     vidGrabber.setContrast(30);
     */
-    //ONLY PS3
-    
-    /*
-    
-    videoInverted 	= new unsigned char[camWidth*camHeight*3];
-    videoTexture.allocate(camWidth,camHeight, OF_IMAGE_COLOR);
-    */
-    //videoTexture.allocate(camWidth,camHeight, GL_RGB);
 
     imageMemory.assign(300,"NULL");
     colorMemory.assign(300,0);
     colorMemory2.assign(300,0);
-
     
-    //finder.setup("haarcascade_frontalface_alt2.xml");
-    finder.setup("haarcascade_frontalface_default.xml");
-    
-    // Define face tracking presets
-    finder.setPreset(ObjectFinder::Fast);
-    
-    /*
-    finder.setRescale(.3);
-    finder.setMinNeighbors(2);
-    finder.setMultiScaleFactor(1.2);
-    finder.setMinSizeScale(.03);
-    finder.setMaxSizeScale(.8);
-    finder.setCannyPruning(false);
-    finder.setFindBiggestObject(false);
-    
-     finder.//Accurate
-     finder.setRescale(.5);
-     finder.setMinNeighbors(6);
-     finder.setMultiScaleFactor(1.02);
-     finder.setMinSizeScale(.1);
-     finder.setMaxSizeScale(1);
-     finder.setCannyPruning(true);
-     finder.setFindBiggestObject(false);
-    
-    
-      finder.setRescale(.4); //0.7= good distance but slow
-      finder.setMinNeighbors(6);
-      finder.setMultiScaleFactor(1.1);
-      finder.setMinSizeScale(.03);
-      finder.setMaxSizeScale(0.8);
-      finder.setCannyPruning(true);
-      finder.setFindBiggestObject(false);
-    */
     finder.setUseHistogramEqualization(true);
     finder.getTracker().setSmoothingRate(.5);
     
@@ -366,7 +335,7 @@ void ofApp::draw(){
 
         //DRAW IMAGES
         if (drawPictures) {
-            //Check if images is in memory, and if it is load it
+            //Check if images is in memory, and if it is, load it
             if ((imageMemory.at(finder.getTracker().getLabelFromIndex(i)) != "NULL")){
             
                 //draw images
@@ -385,7 +354,7 @@ void ofApp::draw(){
                //Else add it to memory
             }else{
 
-                imageMemory[finder.getTracker().getLabelFromIndex(i)]=animals[(int)ofRandom(0,4)];
+                imageMemory[finder.getTracker().getLabelFromIndex(i)]=animals[(int)ofRandom(0,5)];
                 
                 // draw images
                
@@ -405,7 +374,7 @@ void ofApp::draw(){
             }
         }
         
-        
+        if(!drawPictures){
         //DRAW PARTICLES
         //Check if images is in memory, and if it is load it
         if ((colorMemory.at(finder.getTracker().getLabelFromIndex(i)) != 0)){
@@ -455,7 +424,7 @@ void ofApp::draw(){
             //Particle end
             
         }
-
+        }
         //NEW
         
         if (drawPictures){
