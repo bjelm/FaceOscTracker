@@ -1,6 +1,6 @@
 #FaceOscTracker
 
-tags: OF, openFrameworks, face tracking, Ocs
+Keywords: openFrameworks, face tracking, Ocs, OpenCV
 
 The FaceOscTracker
 
