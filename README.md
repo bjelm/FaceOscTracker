@@ -10,16 +10,10 @@ The FaceOscTracker
 openFrameworks
 
 ###openFramworks addons:
-ofxGui
-ofxOpenCv
-ofxOsc
-ofxSvg
-ofxThreadedImageLoader
-ofxVectorGraphics
-ofxCv
+ofxGui, ofxOpenCv, ofxOsc, ofxSvg, ofxThreadedImageLoader, ofxVectorGraphics, ofxCv
 
 ###Sofware
-Xcode
+Xcode</br>
 Osculator
 
 Based on OscSender and OpenCv
