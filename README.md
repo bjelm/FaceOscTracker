@@ -4,9 +4,9 @@ Keywords: openFrameworks, face tracking, Ocs, OpenCV
 
 The FaceOscTracker
 
-##Requirements:
+Requirements:
 
-###Framworks
+Framworks
 openFrameworks
 
 ###openFramworks addons:
