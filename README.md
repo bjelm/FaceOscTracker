@@ -13,7 +13,7 @@ openFrameworks
 ofxGui, ofxOpenCv, ofxOsc, ofxSvg, ofxThreadedImageLoader, ofxVectorGraphics, ofxCv
 
 ###Sofware
-Xcode</br>
+Xcode<br/>
 Osculator
 
 Based on OscSender and OpenCv
