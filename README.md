@@ -28,30 +28,11 @@ ofxOpenCv, ofxOsc, ofxCv
 Xcode<br/>
 Osculator - http://www.osculator.net/
 
-#Setup
 ###Folder structure (only the interesting files)
 
 This is the folder strutureof the interesing files that hold varibles or code for tweaking.
 In the file ofApp.cpp there are settings.¨
 
-```c
-
-  string animals[6]={"dog1.png","dog2.png","dog3.png","ape1.png","cat1.png","sunglasses.png"};
-
-
-  // Init camera, see the available video devices in the consolse
-  drawPictures    = false; //Show images from the data folder, change image array for more images
-  showVideo       = false;
-  cameraDevice    = 0;
-
-  //Camera settings
-  camWidth 		    = 640;
-  camHeight 		  = 480;
-  camFrameRate    = 120;
-
-  //Audio device, see the available audio devices in the consolse
-  inputAdioDevice = 0;
-```
 
 ```
 ├── FaceOscTracker
@@ -72,6 +53,26 @@ In the file ofApp.cpp there are settings.¨
               ├── sunglasses.png
 
 
+```
+#Setup
+
+```c
+
+  string animals[6]={"dog1.png","dog2.png","dog3.png","ape1.png","cat1.png","sunglasses.png"};
+
+
+  // Init camera, see the available video devices in the consolse
+  drawPictures    = false; //Show images from the data folder, change image array for more images
+  showVideo       = false;
+  cameraDevice    = 0;
+
+  //Camera settings
+  camWidth 		    = 640;
+  camHeight 		  = 480;
+  camFrameRate    = 120;
+
+  //Audio device, see the available audio devices in the consolse
+  inputAdioDevice = 0;
 ```
 
 <b>Tracking</b><br/>
