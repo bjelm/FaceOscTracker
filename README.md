@@ -50,7 +50,7 @@ In the file ofApp.cpp there are settings.¨
 
 ```
 ##Setup
-The folowing values in _ofApp.cpp_ are to be changed to fit your needs. Enable the parameter _showVideo_ when setting up camera to make it easier.
+The folowing values in _ofApp.cpp_ are to be changed to fit your needs. Enable the parameter _showVideo_ when setting up the camera to make it easier.
 
 
 ```c
