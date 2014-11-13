@@ -8,7 +8,7 @@ This work was done during a short course called DIY multitouch less touch held d
 
 Keywords: openFrameworks, face tracking, Ocs, OpenCV
 
-#The concept
+##The concept
 During a course in _DIY multiTouch less touch_ at Potsdam Fachhochschule we tried different types of DIY multiTouch examples. One of the examples were faceTracking. As we explored faceTracking we came up with an idea of connecting faces to music/beats. What would happen if several tracked faces generated a beat, and together music. Also, if a face can be remembered we could represent this by either playing a specific beat for that face and also have a visual representation. The original idea here was to change the color ambience of a room. But we only used colored blobs for the visual representation. We also wanted the visual representation to react to the music that was playing. This was done by changing the size of the blobs in sync with the beat.
 
 ##Description
