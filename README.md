@@ -45,19 +45,14 @@ In the file ofApp.cpp there are settings.¨
         ├── data           (Folder for images and for tracking xml data)
               ├── haarcascade_frontalface_alt2.xml
               ├── haarcascade_frontalface_default.xml
-              ├── ape1.png
-              ├── cat1.png
-              ├── dog1.png
-              ├── dog2.png
-              ├── dog3.png
-              ├── sunglasses.png
+          
 
 
 ```
-#Setup
+##Setup
 
 ```c
-
+//Array for adding pictures from the data folder
   string animals[6]={"dog1.png","dog2.png","dog3.png","ape1.png","cat1.png","sunglasses.png"};
 
 
