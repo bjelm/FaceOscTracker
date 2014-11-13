@@ -50,12 +50,10 @@ In the file ofApp.cpp there are settings.¨
 
 ```
 ##Setup
-The folowing values in _ofApp.cpp_ are to be changed to fit your needs. Enable the parameter _showVideo_ when setting up the camera to make it easier.
+The folowing values in _ofApp.cpp_ are to be changed to fit your needs. Enable the parameter _showVideo_ when setting up the camera to make it easier. When you start the compile the program, you can see what camera device and audio device you have.
 
 
 ```c
-//Array for adding pictures from the data folder
-  string animals[6]={"dog1.png","dog2.png","dog3.png","ape1.png","cat1.png","sunglasses.png"};
 
 
   // Init camera, see the available video devices in the consolse
@@ -109,4 +107,12 @@ setMinSizeScale(.1);
 setMaxSizeScale(1);
 setCannyPruning(false);
 setFindBiggestObject(false);
+```
+###Face overlay Images
+If you want to play with overlaying images on faces this is where you change,
+In the beginning of _ofApp.cpp_ there is an array where you can change image file names.
+
+```c
+//Array for adding pictures from the data folder
+  string animals[6]={"dog1.png","dog2.png","dog3.png","ape1.png","cat1.png","sunglasses.png"};
 ```
