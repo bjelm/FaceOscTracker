@@ -43,9 +43,9 @@ In the file ofApp.cpp there are settings.¨
 
     ├── bin
         ├── data           (Folder for images and for tracking xml data)
-              ├── haarcascade_frontalface_alt2.xml
-              ├── haarcascade_frontalface_default.xml
-          
+              ├── haarcascade_frontalface_alt2.xml   (Tracking data, not to be changed)     
+              ├── haarcascade_frontalface_default.xml     (Tracking data, not to be changed)
+
 
 
 ```
