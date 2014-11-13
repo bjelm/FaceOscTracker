@@ -37,8 +37,8 @@ In the file ofApp.cpp there are settings.¨
 ```
 ├── FaceOscTracker
     ├── src
-        ├── main.cpp       (Setting for application windowsize)
-        ├── ofApp.cpp      (Setup for video capture, tracking, and sound device, and image array)
+        ├── main.cpp       (Setting for application window size)
+        ├── ofApp.cpp      (Setup for video capture, tracking, and sound device)
         ├── ofApp.h        (Variable declarations)
 
     ├── bin
