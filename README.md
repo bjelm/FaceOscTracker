@@ -43,13 +43,15 @@ In the file ofApp.cpp there are settings.¨
 
     ├── bin
         ├── data           (Folder for images and for tracking xml data)
-              ├── haarcascade_frontalface_alt2.xml   (Tracking data, not to be changed)     
+              ├── haarcascade_frontalface_alt2.xml   (Tracking data, not to be changed)
               ├── haarcascade_frontalface_default.xml     (Tracking data, not to be changed)
 
 
 
 ```
 ##Setup
+The folowing values in _ofApp.cpp_ are to be changed to fit your needs. Enable the parameter _showVideo_ when setting up camera to make it easier.
+
 
 ```c
 //Array for adding pictures from the data folder
