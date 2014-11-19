@@ -18,6 +18,9 @@ The OSC massage is sent together with an id corresponding to that face to Oscula
 
 ##Requirements</b><br/>
 
+Some knowledge of Ableton live, midi and some programming, at least programming terminology.
+
+
 <b>Framework:</b><br/>
 openFrameworks - http://openframeworks.cc/
 
@@ -27,7 +30,9 @@ ofxOpenCv, ofxOsc, ofxCv
 <b>Sofware</b><br/>
 Xcode<br/>
 Osculator<br/>
-Ableton Live
+Ableton Live<br/>
+
+
 
 ###Folder structure (only the interesting files)
 
@@ -142,6 +147,10 @@ With trigger sensitivity I mean what osc input signal level with trigger a MIDI 
 Then you need to start Osculator so that Ableton can see it. Then start Ableton live and go to the settings pane. And these are the settings in Ableton live for communicating with Osculator and Ableton live.<br/><br/>
 ![Alt text](http://www.bjelm.com/gitStuff/abeltonMidiSetup.jpg "Optional title") <br/><br/>
 
-After this you have go into Midi mapping mode on Ableton. Map the midi signals coming from Osculator to what you want to happen in Ableton live. The easiest way to do this is to press the OSC signal button on each signal coming from FaceOscTracker. See red circle in the image below.
+After this you have go into Midi mapping mode on Ableton. Map the midi signals coming from Osculator to what you want to happen in Ableton live. The easiest way to do this is to press the OSC signal button on each signal coming from FaceOscTracker. See red circle in the image below. Choose track and then a midi option on the track, a you have created in Ableton live, then press the button in the red circle on the osc signal you want to map to that midi track.
 
 ![Alt text](http://www.bjelm.com/gitStuff/osculatorbutton.jpg "Optional title") <br/>
+
+
+<b>Good luck and happy tracking</b><br/>
+/Petter B
