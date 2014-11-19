@@ -26,7 +26,8 @@ ofxOpenCv, ofxOsc, ofxCv
 
 <b>Sofware</b><br/>
 Xcode<br/>
-Osculator - http://www.osculator.net/
+Osculator<br/>
+Ableton Live
 
 ###Folder structure (only the interesting files)
 
@@ -116,3 +117,31 @@ In the beginning of _ofApp.cpp_ there is an array where you can change image fil
 //Array for adding pictures from the data folder
   string animals[6]={"dog1.png","dog2.png","dog3.png","ape1.png","cat1.png","sunglasses.png"};
 ```
+
+##Setting up with Osculator and Ableton live
+
+###Setting up Osculator
+Launch the FaceOscTracker app from Xcode. Then start Osculator and change the port to the same as it is set in FaceOscTracker code _ofApp.h_. If it is already set to 3333 you are good to go. Osculator should map upp 7 areas after this. Save this osculator setup. Then change all the event types to Midi CC. Set value to 0 and assign a different channel to every OSC message(Signal)<br/>
+
+###code in _ofApp.h_
+```c
+//OSC connection
+#define HOST "localhost"
+#define PORT 3333
+```
+
+###Osculator setup
+![Alt text](http://www.bjelm.com/gitStuff/oscSetup.jpg "Optional title")
+
+###Setting trigger sensitivity
+With trigger sensitivity I mean what osc input signal level with trigger a MIDI CC signal. These settings are depending on want you want do do, but for our setup a value of max in 1000 and max out 1000 was good. Press the "secret" weird looking arrow button in the red circle. And yu can chancge the input and output max values.<br/><br/>
+![Alt text](http://www.bjelm.com/gitStuff/oscSetup2.jpg "Optional title") <br/>
+
+
+###Setting Ableton live to receive midi from Osculator
+Then you need to start Osculator so that Ableton can see it. Then start Ableton live and go to the settings pane. And these are the settings in Ableton live for communicating with Osculator and Ableton live.<br/><br/>
+![Alt text](http://www.bjelm.com/gitStuff/abeltonMidiSetup.jpg "Optional title") <br/><br/>
+
+After this you have go into Midi mapping mode on Ableton. Map the midi signals coming from Osculator to what you want to happen in Ableton live. The easiest way to do this is to press the OSC signal button on each signal coming from FaceOscTracker. See red circle in the image below.
+
+![Alt text](http://www.bjelm.com/gitStuff/osculatorbutton.jpg "Optional title") <br/>
