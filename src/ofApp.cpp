@@ -34,7 +34,7 @@ void ofApp::setup(){
     camFrameRate    = 120;
     
     //Audio device, see the available audio devices in the consolse
-    inputAdioDevice = 0;
+    inputAdioDevice = 3;
     
     
     //finder.setup("haarcascade_frontalface_alt2.xml");
@@ -67,7 +67,7 @@ void ofApp::setup(){
         ofBackground(255, 255, 255);
         ofEnableAlphaBlending();
         ofSetFrameRate(90);
-        ofSetBackgroundAuto(false);
+        ofSetBackgroundAuto(true);
     }
     
     //List sounddevices in the
