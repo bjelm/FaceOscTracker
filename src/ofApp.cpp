@@ -19,7 +19,7 @@ vector<string> imageMemory;
 vector<int> colorMemory;
 vector<int> colorMemory2;
 
-string animals[6]={"dog1.png","dog2.png","dog3.png","ape1.png","cat1.png","sunglasses.png"};
+string animals[6]={"image1.png","image2.png","image3.png","image4.png","image5.png","sunglasses.png"};
 
 void ofApp::setup(){
 

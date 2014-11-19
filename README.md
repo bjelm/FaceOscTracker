@@ -116,11 +116,11 @@ setFindBiggestObject(false);
 ```
 ###Face overlay Images
 If you want to play with overlaying images on faces this is where you change,
-In the beginning of _ofApp.cpp_ there is an array where you can change image file names.
+In the beginning of _ofApp.cpp_ there is an array where you can change image file names. Images are not included. You need to create your own images.
 
 ```c
 //Array for adding pictures from the data folder
-  string animals[6]={"dog1.png","dog2.png","dog3.png","ape1.png","cat1.png","sunglasses.png"};
+  string animals[6]={"image1.png","image2.png","image3.png","image4.png","image5.png","sunglasses.png"};
 ```
 
 ##Setting up with Osculator and Ableton live
